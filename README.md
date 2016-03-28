@@ -3,7 +3,8 @@ Implementation of the digital back-end using ROACH technology into the MINI- Rad
 
 Several scripts have been written, the latest version are online here in the repository. Three folders contains all necessary files to test this project.
 
-#1) espectrometro : This folder contain the python script spec12_32b_2bram.py, to perform two spectrometers with one bram per band.
+#1) espectrometro : 
+This folder contain the python script spec12_32b_2bram.py, to perform two spectrometers with one bram per band.
 
 How to run this script?:
 
