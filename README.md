@@ -1,9 +1,9 @@
 # Mini_2016
 Implementation of the digital back-end using ROACH technology into the MINI- Radio Telescope.
 
-Several scripts have been written, the latest version are online here in the repository. Three python scripts are necessary for test this project.
+Several scripts have been written, the latest version are online here in the repository. Three folders contains all necessary files to test this project.
 
-#1) Two spectrometers with one bram per band: 
+#1) espectrometro : This folder contain the python script spec12_32b_2bram.py, to perform two spectrometers with one bram per band.
 
 How to run this script?:
 
@@ -13,7 +13,7 @@ Gain = 2^{18} - 1 = 262143
 
 Accumulation length = 65536 very long!
 
-#2) The Calibration script:
+#2) Calibration :
 
 to run it:
 
@@ -21,7 +21,7 @@ to run it:
 
 Gain = 0x0080000 (hex) = 524288 (Decimal).
 
-#3) DSSS script for SRR measurement:
+#3) DSSS :
 
 To run this script:
 
