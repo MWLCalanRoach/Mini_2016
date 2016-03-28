@@ -1,5 +1,5 @@
 # Mini_2016
-Implementation of the digital back-end using ROACH technology into the MINI- Radio Telescope.
+Implementation of the digital back-end using ROACH technology into the MINI- Radio Telescope. In this commit we incorporatie an async reset signal, in order to trigger a new accumulation using the gpio in the ROACH.
 
 Several scripts have been written, the latest version are online here in the repository. Three folders contains all necessary files to test this project.
 
