@@ -2,11 +2,6 @@
 '''
 para correr la calibracion:
 
-./calibracion.py 192.168.1.11 -g 0x0080000 -b ssm_dsp_dif_sin_acc_dctrl_2013_Oct_30_1217.bof #500Mhz
-./calibracion.py 192.168.1.11 -g 0x0080000 -b ssm_dsp_dif_sin_acc_final.bof                  #1Ghz holanda
-./calibracion.py 192.168.1.11 -g 0x0080000 -b ssm_dsp_dif_sin_acc_dctrl_2016_Jan_07_1247.bof
-./calibracion.py 192.168.1.11 -g 0x0080000 -b ssm_dsp_dif_sin_acc_dctrl_2016_Jan_08_1452.bof #1GHz
-
 ./calibracion.py 192.168.1.11 -g 0x0080000 -b calibracion_mini_500Mhz.bof
 
 \nAuthor: Andres Alvear, November 2015.

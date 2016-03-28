@@ -5,11 +5,8 @@ Designed for use with MINI Telescope and ROACH platforms.\n
 
 You need to have KATCP and CORR installed. Get them from http://pypi.python.org/pypi/katcp and http://casper.berkeley.edu/svn/trunk/projects/packetized_correlator/corr-0.4.0/
 
-To run this script:
-./spectrometer_32bits_1brampsb_s12_SRR_measurement.py 192.168.1.11 -g 262143 -l 65536 -b minispec_1ghz_1bram_u_2015_Sep_04_1939.bof
-
 mini final:
-./spectrometer_32bits_1brampsb_s12_SRR_measurement.py 192.168.1.11 -g 262143 -l 65536 -b minispec_chopper_2016_Mar_23_1621.bof
+./2sb_mini.py 192.168.1.11 -g 262143 -l 65536 -b 2sb_mini_500Mhz.bof
 
 Gain = 2^18 - 1 = 262143 
 accumulation length = 65536 very long!
