@@ -96,12 +96,16 @@ if __name__ == '__main__':
     p = OptionParser()
     p.set_usage('spectrometer.py <ROACH_HOSTNAME_or_IP> [options]')
     p.set_description(__doc__)
-    p.add_option('-l', '--acc_len', dest='acc_len', type='int',default=2*(2**28)/2048,
-        help='Set the number of vectors to accumulate between dumps. default is 2*(2^28)/2048, or just under 2 seconds.')
+    p.add_option('-l', '--acc_len', dest='acc_len', type='int',default=1,
+        help='defaults values: 1 for cal and 0 for splobs.')
     p.add_option('-g', '--gain', dest='gain', type='int',default=0x00001000,
         help='Set the digital gain (6bit quantisation scalar). Default is 0xffffffff (max), good for wideband noise. Set lower for CW tones.')
     p.add_option('-s', '--skip', dest='skip', action='store_true',
         help='Skip reprogramming the FPGA and configuring EQ.')
+    p.add_option('-o', '--splobs', dest='splobs', type='int',default=11719,
+        help='Set the Spectral Line Observation length. Default is 11719 (max).')
+    p.add_option('-c', '--cal', dest='cal', type='int',default=7280,
+        help='Set the Calibration length. Default is 7280 (max).')
     p.add_option('-b', '--bof', dest='boffile',type='str', default='',
         help='Specify the bof file to load')
     opts, args = p.parse_args(sys.argv[1:])
@@ -146,6 +150,13 @@ try:
     print 'Resetting counters...',
     fpga.write_int('cnt_rst',1) 
     fpga.write_int('cnt_rst',0) 
+    print 'done'
+    print 'Configuring SPLOBS register...',
+    fpga.write_int('splobs',opts.splobs)  
+    print 'done'
+
+    print 'Configuring CAL register...',
+    fpga.write_int('cal',opts.cal)
     print 'done'
     print 'Setting digital gain of all channels to %i...'%opts.gain,
     if not opts.skip:

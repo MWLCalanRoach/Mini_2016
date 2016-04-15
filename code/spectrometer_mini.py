@@ -6,10 +6,16 @@ Designed for use with MINI Telescope and ROACH platforms.\n
 You need to have KATCP and CORR installed. Get them from http://pypi.python.org/pypi/katcp and http://casper.berkeley.edu/svn/trunk/projects/packetized_correlator/corr-0.4.0/
 
 To run this script:
-./spectrometer_mini.py 192.168.1.11 -g 262143 -l 65536
+./spec12_32b_2bram.py 192.168.1.11 -g 262143 -l 65536
+./spec12_32b_2bram.py 192.168.1.11 -g 262143 -l 65536 -b minispec_chopper_2016_Apr_12_1723.bof
+minispec_chopper_2016_Apr_11_1331.bof
+/home/roach/Desktop/roberto/mini_chopper/minispec_chopper/bit_files/
+./spec12_32b_2bram.py 192.168.1.11 -g 262143 -l 1 -b minispec_chopper_2016_Apr_13_1742.bof
 
 Gain = 2^18 - 1 = 262143 
-accumulation length = 65536 very long!
+accumulation length = 1 o 0 mode.
+cal: 1
+splobs: 0
 
 \nAuthor: Andres, May 2015.
 '''
@@ -19,7 +25,11 @@ import corr, time, numpy, struct, sys, logging, math, Gnuplot, Gnuplot.funcutils
 from math import *
 
 
-bitstream = 'minispec_chopper_2016_Mar_23_1621.bof'
+# bitstream = 'mini_spec_1ghz_1bram_2015_Sep_03_1058.bof'
+#bitstream = 'minispec_1ghz_1bram_u_2015_Sep_04_1658.bof'
+#bitstream = 'minispec_1ghz_1bram_u_2015_Sep_04_1939.bof'
+bitstream = 'robtest.bof'
+
 
 
 katcp_port=7147
@@ -44,10 +54,22 @@ def get_data():
     
     bla = fpga.read_uint('gpio_state')
     print bla
+    #fpga.write_int('data_ctrl_lec_done',0)
+    #fpga.write_int('data_ctrl_sel_we',1)
 
     a_0l=struct.unpack('>2048I',fpga.read('bram0',2048*4,0))
+#    a_1l=struct.unpack('>512I',fpga.read('dout0_1',512*4,0))
+#    a_2l=struct.unpack('>512I',fpga.read('dout0_2',512*4,0))
+#    a_3l=struct.unpack('>512I',fpga.read('dout0_3',512*4,0))
 #
     a_0m=struct.unpack('>2048I',fpga.read('bram1',2048*4,0))
+#    a_1m=struct.unpack('>512I',fpga.read('dout1_1',512*4,0))
+#    a_2m=struct.unpack('>512I',fpga.read('dout1_2',512*4,0))
+#    a_3m=struct.unpack('>512I',fpga.read('dout1_3',512*4,0))
+
+    #fpga.write_int('data_ctrl_lec_done',1)
+    #fpga.write_int('data_ctrl_sel_we',0)
+
 
 
     interleave_a=[]
@@ -56,9 +78,14 @@ def get_data():
     interleave_log_b=[]
 
     for i in range(2048):
-        interleave_a.append(float(float(a_0l[i])+1))
+        interleave_a.append(float(float(a_0l[i])+1))#24 es el original
+        #interleave_a.append(float(float(a_1l[i])+1))#24 es el original
+        #interleave_a.append(float(float(a_2l[i])+1))#24 es el original
+        #interleave_a.append(float(float(a_3l[i])+1))#24 es el original
         interleave_b.append(float(float(a_0m[i])+1))
-
+        #interleave_b.append(float(float(a_1m[i])+1))
+        #interleave_b.append(float(float(a_2m[i])+1))
+        #interleave_b.append(float(float(a_3m[i])+1))
 
     for k in range(4*512):
         interleave_log.append(10*log10(interleave_a[k]))
@@ -71,7 +98,7 @@ def continuous_plot(fpga):
     bw=trunc(fpga.est_brd_clk())*4
     acc_n, interleave_a, interleave_log, interleave_log_b = get_data()
     g0.clear()    
-    g0.title('ADC0 acc:'+str(acc_n)+' | Bw= '+str(bw)+' MHz')
+    g0.title('ADC0 acc:'+str(acc_n)+' | Bw= '+str(bw)+' MHz ')
     g0.ylabel('Power AU (dB)')
     g0('set style data linespoints')
     g0('set yrange [0:100]')
@@ -82,7 +109,7 @@ def continuous_plot(fpga):
     g0('set grid x')
 
     g1.clear()
-    g1.title('ADC1 acc:'+str(acc_n)+' | Bw= '+str(bw)+' MHz')
+    g1.title('ADC1 acc:'+str(acc_n)+' | Bw= '+str(bw)+' MHz ')
     g1.ylabel('Power AU (dB)')
     g1('set style data linespoints')
     g1('set yrange [0:100]')
@@ -94,10 +121,14 @@ def continuous_plot(fpga):
 
     while ok==1 :
         acc_n, interleave_a, interleave_log, interleave_log_b = get_data()
-
+        #analog_freq = linspace(0, bw, spec_len)
         g0.plot(interleave_log)
-        time.sleep(0.1)
+        g0.title('ADC0 acc:'+str(acc_n)+' | Bw= '+str(bw)+' MHz')
+        time.sleep(0.2)
+        # print 'bram0 = ',interleave_a # print a_0l
+        time.sleep(0.2)
         g1.plot(interleave_log_b)
+        g1.title('ADC1 acc:'+str(acc_n)+' | Bw= '+str(bw)+' MHz')
 
 
 
@@ -112,13 +143,17 @@ if __name__ == '__main__':
     p = OptionParser()
     p.set_usage('spectrometer.py <ROACH_HOSTNAME_or_IP> [options]')
     p.set_description(__doc__)
-    p.add_option('-l', '--acc_len', dest='acc_len', type='int',default=2*(2**28)/2048,
-        help='Set the number of vectors to accumulate between dumps. default is 2*(2^28)/2048, or just under 2 seconds.')
+    p.add_option('-l', '--acc_len', dest='acc_len', type='int',default=1,
+        help='defaults values: 1 for cal and 0 for splobs.')
     p.add_option('-g', '--gain', dest='gain', type='int',default=0x00001000,
         help='Set the digital gain (6bit quantisation scalar). Default is 0xffffffff (max), good for wideband noise. Set lower for CW tones.')
+    p.add_option('-o', '--splobs', dest='splobs', type='int',default=11719,
+        help='Set the Spectral Line Observation length. Default is 11719 (max).')
+    p.add_option('-c', '--cal', dest='cal', type='int',default=7280,
+        help='Set the Calibration length. Default is 7280 (max).')
     p.add_option('-s', '--skip', dest='skip', action='store_true',
         help='Skip reprogramming the FPGA and configuring EQ.')
-    p.add_option('-b', '--bof', dest='boffile',type='str', default='minispec_chopper_2016_Mar_23_1621.bof',
+    p.add_option('-b', '--bof', dest='boffile',type='str', default='robtest.bof',
         help='Specify the bof file to load')
     opts, args = p.parse_args(sys.argv[1:])
 
@@ -169,6 +204,14 @@ try:
     print 'Resetting counters...',
     fpga.write_int('cnt_rst',1) 
     fpga.write_int('cnt_rst',0) 
+    print 'done'
+
+    print 'Configuring SPLOBS register...',
+    fpga.write_int('splobs',opts.splobs)  
+    print 'done'
+
+    print 'Configuring CAL register...',
+    fpga.write_int('cal',opts.cal)
     print 'done'
 #
     print 'Setting digital gain of all channels to %i...'%opts.gain,
